@@ -2,7 +2,8 @@
 django-allowedsites
 ===================
 
-Django 1.6+ library for setting your ``ALLOWED_HOSTS`` based on the domains in ``django.contrib.sites``
+Django 1.6+ library for setting your ``ALLOWED_HOSTS`` based on the domains in ``django.contrib.sites`` and
+the public IP address that will be determined at runtime.
 
 .. image:: https://travis-ci.org/kezabelle/django-allowedsites.svg?branch=master
   :target: https://travis-ci.org/kezabelle/django-allowedsites
@@ -10,7 +11,7 @@ Django 1.6+ library for setting your ``ALLOWED_HOSTS`` based on the domains in `
 Usage is something like the following, in your ``settings.py`` or equivalent::
 
     from allowedsites import AllowedSites
-    ALLOWED_HOSTS = AllowedSites(defaults=('mytestsite.com',))
+    ALLOWED_HOSTS = AllowedSites(defaults=('mytestsite.com',), dynamic_public_ip=True)
     
 Or, if you want to use your cache backend::
 

@@ -11,12 +11,22 @@ class Sites(object):
     Sites are unordered, because seriously who cares.
     """
 
-    __slots__ = ('defaults',)
+    __slots__ = ('defaults', 'dynamic_public_ip',)
 
-    def __init__(self, defaults=None):
+    def __init__(self, defaults=None, dynamic_public_ip=False):
         if defaults is None:
             defaults = ()
         self.defaults = frozenset(defaults)
+        self.dynamic_public_ip = dynamic_public_ip
+
+    def get_public_ip(self):
+        import requests
+        public_ip = None
+        try:
+            public_ip = requests.get('http://checkip.amazonaws.com').text.rstrip('\n')
+        except requests.exceptions.RequestException:
+            pass
+        return public_ip
 
     def get_raw_sites(self):
         from django.contrib.sites.models import Site
@@ -34,6 +44,9 @@ class Sites(object):
         for domain in raw_domains:
             domain_host, domain_port = split_domain_port(domain)
             domains.add(domain_host)
+        public_ip = self.get_public_ip()
+        if self.dynamic_public_ip and public_ip:
+            domains.add(public_ip)
         return frozenset(domains)
 
     def get_merged_allowed_hosts(self):
@@ -95,7 +108,7 @@ class AllowedSites(Sites):
     This only exists to allow isinstance to differentiate between
     the various Site subclasses
     """
-    __slots__ = ('defaults',)
+    __slots__ = ()
 
 
 class CachedAllowedSites(Sites):
@@ -105,7 +118,7 @@ class CachedAllowedSites(Sites):
     a signal listening for ``Site`` creates will be able to add to
     the cache's contents for other processes to pick up on.
     """
-    __slots__ = ('defaults', 'key')
+    __slots__ = ('key',)
 
     def __init__(self, *args, **kwargs):
         self.key = 'allowedsites'
