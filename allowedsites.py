@@ -137,7 +137,7 @@ class CachedAllowedSites(Sites):
         :param kwargs:
         """
         self.cache_timeout = cache_timeout
-        super(CachedAllowedSites, self).__init__(*args, **kwargs)
+        super(CachedAllowedSites, self).__init__(**kwargs)
 
     def _get_cached_sites(self):
         results = cache.get(self.key, None)
