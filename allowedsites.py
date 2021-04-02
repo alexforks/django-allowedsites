@@ -124,10 +124,16 @@ class CachedAllowedSites(Sites):
     a signal listening for ``Site`` creates will be able to add to
     the cache's contents for other processes to pick up on.
     """
-    __slots__ = ('key',)
+    __slots__ = ('key','cache_timeout',)
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, cache_timeout=None, **kwargs):
+        """
+        :param args:
+        :param cache_timeout: None (forever) - for how long the cache will last, in seconds.
+        :param kwargs:
+        """
         self.key = 'allowedsites'
+        self.cache_timeout = cache_timeout
         super(CachedAllowedSites, self).__init__(*args, **kwargs)
 
     def _get_cached_sites(self):
@@ -147,7 +153,7 @@ class CachedAllowedSites(Sites):
         """
         from django.core.cache import cache
         in_db = self.get_domains()
-        cache.set(self.key, in_db)
+        cache.set(self.key, in_db, self.cache_timeout)
         return in_db
 
     @classmethod
