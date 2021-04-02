@@ -11,19 +11,25 @@ class Sites(object):
     Sites are unordered, because seriously who cares.
     """
 
-    __slots__ = ('defaults', 'dynamic_public_ip',)
+    __slots__ = ('defaults', 'dynamic_public_ip', 'net_timeout',)
 
-    def __init__(self, defaults=None, dynamic_public_ip=False):
+    def __init__(self, defaults=None, dynamic_public_ip=False, net_timeout=5):
+        """
+        :param defaults: None
+        :param dynamic_public_ip: False - whether to detect the runtime public IP address and add it to ALLOWED_HOSTS.
+        :param net_timeout: 5 (seconds) - the timeout for the network request to get the server's public IP address.
+        """
         if defaults is None:
             defaults = ()
         self.defaults = frozenset(defaults)
         self.dynamic_public_ip = dynamic_public_ip
+        self.net_timeout = net_timeout
 
     def get_public_ip(self):
         import requests
         public_ip = None
         try:
-            public_ip = requests.get('http://checkip.amazonaws.com').text.rstrip('\n')
+            public_ip = requests.get('http://checkip.amazonaws.com', timeout=self.net_timeout).text.rstrip('\n')
         except requests.exceptions.RequestException:
             pass
         return public_ip
