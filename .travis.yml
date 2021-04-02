@@ -4,7 +4,6 @@ notifications:
   email: false
 
 env:
-  - TOX_ENV=py26-1.6
   - TOX_ENV=py27-1.6
   - TOX_ENV=py27-1.7
   - TOX_ENV=py27-1.8

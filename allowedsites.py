@@ -130,7 +130,7 @@ class CachedAllowedSites(Sites):
     __slots__ = ('cache_timeout',)
     key = 'allowedsites'
 
-    def __init__(self, *args, cache_timeout=None, **kwargs):
+    def __init__(self, cache_timeout=None, **kwargs):
         """
         :param args:
         :param cache_timeout: None (forever) - for how long the cache will last, in seconds.
