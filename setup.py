@@ -31,6 +31,7 @@ setup(
     include_package_data=True,
     install_requires=[
         'Django>=1.4',
+        'requests',
     ],
     test_suite='runtests.runtests',
     zip_safe=False,

@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from django.core.cache import cache
+
 
 class ForceAllowedHostCheck(object):
     def process_request(self, request):
@@ -50,9 +52,10 @@ class Sites(object):
         for domain in raw_domains:
             domain_host, domain_port = split_domain_port(domain)
             domains.add(domain_host)
-        public_ip = self.get_public_ip()
-        if self.dynamic_public_ip and public_ip:
-            domains.add(public_ip)
+        if self.dynamic_public_ip:
+            public_ip = self.get_public_ip()
+            if public_ip:
+                domains.add(public_ip)
         return frozenset(domains)
 
     def get_merged_allowed_hosts(self):
@@ -124,7 +127,8 @@ class CachedAllowedSites(Sites):
     a signal listening for ``Site`` creates will be able to add to
     the cache's contents for other processes to pick up on.
     """
-    __slots__ = ('key','cache_timeout',)
+    __slots__ = ('cache_timeout',)
+    key = 'allowedsites'
 
     def __init__(self, *args, cache_timeout=None, **kwargs):
         """
@@ -132,12 +136,10 @@ class CachedAllowedSites(Sites):
         :param cache_timeout: None (forever) - for how long the cache will last, in seconds.
         :param kwargs:
         """
-        self.key = 'allowedsites'
         self.cache_timeout = cache_timeout
         super(CachedAllowedSites, self).__init__(*args, **kwargs)
 
     def _get_cached_sites(self):
-        from django.core.cache import cache
         results = cache.get(self.key, None)
         return results
 
@@ -151,16 +153,22 @@ class CachedAllowedSites(Sites):
         """
         Forces whatever is in the DB into the cache.
         """
-        from django.core.cache import cache
         in_db = self.get_domains()
         cache.set(self.key, in_db, self.cache_timeout)
         return in_db
 
-    @classmethod
-    def update_cache(cls, **kwargs):
+    def update_cache(self, **kwargs):
         """
         May be used as a post_save or post_delete signal listener.
         Replaces whatever is in the cache with the sites in the DB
         *at this moment*
         """
-        cls()._set_cached_sites(**kwargs)
+        self._set_cached_sites(**kwargs)
+
+    @classmethod
+    def clear_cache(cls):
+        """
+        May be used as a post_save or post_delete signal listener.
+        Clears whatever is in the cache.
+        """
+        cache.delete(cls.key)

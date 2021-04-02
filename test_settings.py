@@ -23,8 +23,6 @@ INSTALLED_APPS = (
 SKIP_SOUTH_TESTS = True
 SOUTH_TESTS_MIGRATE = False
 
-ROOT_URLCONF = 'test_urls'
-
 # Use a fast hasher to speed up tests.
 PASSWORD_HASHERS = (
     'django.contrib.auth.hashers.MD5PasswordHasher',

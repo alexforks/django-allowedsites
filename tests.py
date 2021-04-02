@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from allowedsites import AllowedSites
+from allowedsites import AllowedSites, CachedAllowedSites
 from django.contrib.sites.models import Site
 from django.http.request import validate_host
 from django.test import TestCase as TestCaseUsingDB
@@ -31,6 +31,38 @@ class AllowedSitesTestCase(TestCaseUsingDB):
         with self.assertNumQueries(1):
             data = allowed_cls.get_domains()
             self.assertEqual(data, frozenset(['example.com', 'example.org']))
+
+    def test_get_domains_with_public_ip(self):
+        allowed_cls = AllowedSites(defaults=['yay.com'], dynamic_public_ip=True)
+        with self.assertNumQueries(1):
+            data = allowed_cls.get_domains()
+            self.assertEqual(len(data), 3)
+
+    def test_hit_cache(self):
+        allowed_cls = CachedAllowedSites(defaults=['yay.com'])
+        CachedAllowedSites.clear_cache()
+        data = allowed_cls.get_merged_allowed_hosts()
+        Site.objects.all().delete()
+        data2 = allowed_cls.get_merged_allowed_hosts()
+        self.assertEqual(data, data2)
+
+    def test_clear_cache(self):
+        allowed_cls = CachedAllowedSites(defaults=['yay.com'])
+        CachedAllowedSites.clear_cache()
+        data = allowed_cls.get_merged_allowed_hosts()
+        Site.objects.all().delete()
+        CachedAllowedSites.clear_cache()
+        data2 = allowed_cls.get_merged_allowed_hosts()
+        self.assertNotEqual(data, data2)
+
+    def test_update_cache(self):
+        allowed_cls = CachedAllowedSites(defaults=['yay.com'])
+        allowed_cls.update_cache()
+        data = allowed_cls.get_merged_allowed_hosts()
+        Site.objects.all().delete()
+        allowed_cls.update_cache()
+        data2 = allowed_cls.get_merged_allowed_hosts()
+        self.assertNotEqual(data, data2)
 
     def test_iterable(self):
         """
