@@ -3,22 +3,35 @@ language: python
 notifications:
   email: false
 
+python:
+  - "2.7"
+  - "3.4"
+  - "3.5"
+  - "3.6"
+  - "3.7"
+  - "3.8"
+  - "3.9"
+
 env:
-  - TOX_ENV=py27-1.6
-  - TOX_ENV=py27-1.7
-  - TOX_ENV=py27-1.8
-  - TOX_ENV=py33-1.6
-  - TOX_ENV=py33-1.7
-  - TOX_ENV=py33-1.8
-  - TOX_ENV=py34-1.6
-  - TOX_ENV=py34-1.7
-  - TOX_ENV=py34-1.8
-  - TOX_ENV=pypy-1.6
-  - TOX_ENV=pypy-1.7
-  - TOX_ENV=pypy-1.8
+  - DJANGO_VERSION=1.11.29
+  - DJANGO_VERSION=2.2.19
+  - DJANGO_VERSION=3.1.7
+
+jobs:
+  exclude:
+    - python: "2.7"
+      env: DJANGO_VERSION=2.2.19
+    - python: "2.7"
+      env: DJANGO_VERSION=3.1.7
+    - python: "3.4"
+      env: DJANGO_VERSION=2.2.19
+    - python: "3.4"
+      env: DJANGO_VERSION=3.1.7
+    - python: "3.5"
+      env: DJANGO_VERSION=3.1.7
 
 install:
-  - pip install --upgrade tox
+  - pip install -q django==$DJANGO_VERSION
 
 script:
-  - tox -e $TOX_ENV
+  - python -B -tt -W ignore setup.py test
