@@ -65,14 +65,6 @@ You can modify the the defaults::
     ALLOWED_HOSTS -= AllowedSites(defaults=('mytestsite.com',))
     # ultimately, only anothersite.net is in the defaults
 
-Install
--------
-
-This forked repo is not pushing back to the original repo since the changes are quietly customized.
-Use the below command to install it if you need it::
-
-    pip install git+https://github.com/alexforks/django-allowedsites
-
 Other uses?
 -----------
 
