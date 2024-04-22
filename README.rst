@@ -5,8 +5,8 @@ django-allowedsites
 Django 1.6+ library for setting your ``ALLOWED_HOSTS`` based on the domains in ``django.contrib.sites`` and
 the server's public IP address which is determined at runtime.
 
-.. image:: https://travis-ci.org/alexforks/django-allowedsites.svg?branch=master
-  :target: https://travis-ci.org/alexforks/django-allowedsites
+.. image:: https://travis-ci.org/kezabelle/django-allowedsites.svg?branch=master
+  :target: https://travis-ci.org/kezabelle/django-allowedsites
 
 Usage is something like the following, in your ``settings.py`` or equivalent::
 
