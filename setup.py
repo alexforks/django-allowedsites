@@ -20,8 +20,8 @@ def make_readme(root_path):
 LONG_DESCRIPTION = "\r\n\r\n----\r\n\r\n".join(make_readme(HERE))
 
 setup(
-    name='django-allowedsites',
-    version='0.2.0',
+    name='django-allowedsites-dynamic',
+    version='0.2.1',
     author='Keryn Knight',
     author_email='python-package@kerynknight.com',
     description="dynamic ALLOWED_HOSTS",
